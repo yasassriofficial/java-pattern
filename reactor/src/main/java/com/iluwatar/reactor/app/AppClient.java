@@ -26,16 +26,16 @@ package com.iluwatar.reactor.app;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Represents the clients of Reactor pattern. Multiple clients are run concurrently and send logging
@@ -114,7 +114,7 @@ public class AppClient {
 
     @Override
     public void run() {
-      try (var socket = new Socket(InetAddress.getLocalHost(), serverPort)) {
+      try (var socket = SSLSocketFactory.getDefault().createSocket(InetAddress.getLocalHost(), serverPort)) {
         var outputStream = socket.getOutputStream();
         var writer = new PrintWriter(outputStream);
         sendLogRequests(writer, socket.getInputStream());
